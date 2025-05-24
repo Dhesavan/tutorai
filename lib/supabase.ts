@@ -5,10 +5,10 @@ import { createClient } from "@supabase/supabase-js"
 const getRedirectUrl = () => {
   if (typeof window !== 'undefined') {
     // Client-side: use the current URL
-    return window.location.origin
+    return `${window.location.origin}/auth/callback`
   }
   // Server-side: use environment variable or default to localhost
-  return process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  return `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback`
 }
 
 // Create a single supabase client for interacting with your database
