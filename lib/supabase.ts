@@ -1,6 +1,16 @@
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { createClient } from "@supabase/supabase-js"
 
+// Get the current URL for authentication redirects
+const getRedirectUrl = () => {
+  if (typeof window !== 'undefined') {
+    // Client-side: use the current URL
+    return window.location.origin
+  }
+  // Server-side: use environment variable or default to localhost
+  return process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+}
+
 // Create a single supabase client for interacting with your database
 export const supabase = createClientComponentClient()
 
