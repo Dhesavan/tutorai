@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge"
 import { X } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import { supabase } from "@/lib/supabase"
-import { Github, Mail } from "lucide-react"
+import { Github } from "lucide-react"
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -91,6 +91,11 @@ export function UserAuthForm() {
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const [selectedSkills, setSelectedSkills] = React.useState<string[]>([])
   const [newSkill, setNewSkill] = React.useState("")
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -204,10 +209,12 @@ export function UserAuthForm() {
 
   async function handleSocialLogin(provider: 'google' | 'github') {
     try {
+      const redirectTo = `${window.location.origin}/auth/callback`
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -223,6 +230,10 @@ export function UserAuthForm() {
         variant: "destructive",
       })
     }
+  }
+
+  if (!mounted) {
+    return null // Prevent hydration mismatch by not rendering until client-side
   }
 
   return (

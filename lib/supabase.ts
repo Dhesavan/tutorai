@@ -12,12 +12,28 @@ const getRedirectUrl = () => {
 }
 
 // Create a single supabase client for interacting with your database
-export const supabase = createClientComponentClient()
+export const supabase = createClientComponentClient({
+  options: {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      flowType: 'pkce'
+    }
+  }
+})
 
 // Create a server-side client
 export const createServerSupabaseClient = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      flowType: 'pkce'
+    }
+  }
 )
 
 // Function to create or update a user profile
