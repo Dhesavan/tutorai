@@ -49,11 +49,9 @@ export function AITestGenerator({ userId }: AITestGeneratorProps) {
   const [timeRemaining, setTimeRemaining] = useState(0)
 
   const topics = [
-    "JavaScript Fundamentals",
-    "React.js",
-    "Node.js",
     "Python Basics",
-    "Data Structures & Algorithms",
+    "JavaScript Basics",
+    "Data Structure and Algorithm",
     "Database Concepts",
     "System Design",
     "Web Development",
@@ -76,6 +74,7 @@ export function AITestGenerator({ userId }: AITestGeneratorProps) {
     setIsGenerating(true)
 
     try {
+      console.log("Sending request to generate test...")
       const response = await fetch("/api/ai/generate-test", {
         method: "POST",
         headers: {
@@ -89,11 +88,17 @@ export function AITestGenerator({ userId }: AITestGeneratorProps) {
         }),
       })
 
+      const data = await response.json()
+      console.log("Response status:", response.status)
+      console.log("Response data:", data)
+
       if (!response.ok) {
-        throw new Error("Failed to generate test")
+        throw new Error(data.error + (data.details ? `: ${data.details}` : ''))
       }
 
-      const data = await response.json()
+      if (!data.questions || !Array.isArray(data.questions)) {
+        throw new Error("Invalid response format: missing questions array")
+      }
 
       setTestSession({
         questions: data.questions,
@@ -115,7 +120,7 @@ export function AITestGenerator({ userId }: AITestGeneratorProps) {
       console.error("Error generating test:", error)
       toast({
         title: "Generation failed",
-        description: "Could not generate the test. Please try again.",
+        description: error instanceof Error ? error.message : "Could not generate the test. Please try again.",
         variant: "destructive",
       })
     } finally {
